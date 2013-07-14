@@ -11,6 +11,7 @@ Source0:        http://www.rambau.wm.uni-bayreuth.de/Software/%{name}-%{version}
 Source1:        %{name}-man.tar.xz
 # A replacement Makefile.  See the %%build section for more information.
 Source2:        %{name}-Makefile
+Source3:	%{name}.rpmlintrc
 
 BuildRequires:  cddlib-devel
 BuildRequires:  gmpxx-devel
@@ -27,17 +28,15 @@ in C++, so there is a significant speed up compared to PUNTOS.
 
 %package devel
 Summary:        Header files needed to build with %{name}
-Group:          Development/Libraries
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       cddlib-devel%{?_isa}
-Requires:       gmp-devel%{?_isa}
+Requires:       gmpxx-devel%{?_isa}
 
 %description devel
 Header files needed to build applications that use the %{name} library.
 
 %package libs
 Summary:        Core %{name} functionality in a library
-Group:          Development/Libraries
 
 %description libs
 Command line tools that expose %{name} library functionality.

@@ -13,7 +13,7 @@ Source1:        %{name}-man.tar.xz
 Source2:        %{name}-Makefile
 
 BuildRequires:  cddlib-devel
-BuildRequires:  gmp-devel
+BuildRequires:  gmpxx-devel
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
 %global topcom_major $(echo %{version} | cut -d. -f1)

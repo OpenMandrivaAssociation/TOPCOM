@@ -1,0 +1,142 @@
+# Makefile written by Jerry James <loganjerry@gmail.com>
+# and released into the public domain.
+
+version = @version@
+major = @major@
+minor = @minor@
+
+INCLUDES = -Ilib-src -Ilib-src-reg -Iwrap-gmp-gmpxx -I/usr/include/cddlib
+CPPFLAGS = $(INCLUDES) -DPACKAGE=\"TOPCOM\" -DVERSION=\"$(version)\" \
+ -DVERBOSE -DGMPRATIONAL -ftemplate-depth=35
+CFLAGS = $(CPPFLAGS) @RPM_OPT_FLAGS@
+LIB_LDFLAGS = -Wl,--as-needed -lcddgmp -lgmpxx -lgmp
+LDFLAGS = -Wl,--as-needed -L. -lTOPCOM -lcddgmp -lgmpxx -lgmp
+SHFLAGS = -shared -Wl,-h,libTOPCOM.so.$(major)
+bindir = @bindir@
+libdir = @libdir@
+mandir = @mandir@
+includedir = @includedir@/TOPCOM
+
+library_sources = \
+	lib-src-reg/LPinterface.cc \
+	lib-src-reg/RegularityCheck.cc \
+	lib-src-reg/SPXinterface.cc \
+	lib-src/Admissibles.cc \
+	lib-src/CheckTriang.cc \
+	lib-src/Circuits.cc \
+	lib-src/Cocircuits.cc \
+	lib-src/CommandlineOptions.cc \
+	lib-src/CompressedIntegerSet.cc \
+	lib-src/ComputeTriangs.cc \
+	lib-src/Facets.cc \
+	lib-src/FastSimplicialComplex.cc \
+	lib-src/Field.cc \
+	lib-src/FineTriang.cc \
+	lib-src/Flip.cc \
+	lib-src/IndexTableArray.cc \
+	lib-src/IntegerSet.cc \
+	lib-src/InteriorFacets.cc \
+	lib-src/MarkedFlips.cc \
+	lib-src/Matrix.cc \
+	lib-src/Permutation.cc \
+	lib-src/PlacingTriang.cc \
+	lib-src/PointConfiguration.cc \
+	lib-src/RealChiro.cc \
+	lib-src/SimplicialComplex.cc \
+	lib-src/SimplicialComplexTemplate.cc \
+	lib-src/SparseIntegerSet.cc \
+	lib-src/SparseSimplicialComplex.cc \
+	lib-src/StairCaseMatrix.cc \
+	lib-src/SymmetricBFS.cc \
+	lib-src/Symmetry.cc \
+	lib-src/TriangFlips.cc \
+	lib-src/TriangNode.cc \
+	lib-src/Vector.cc \
+	lib-src/VertexFacetTable.cc \
+	lib-src/VertexFacetTableArray.cc \
+	lib-src/VirtualChiro.cc
+library_objs = $(library_sources:%.cc=%.o)
+
+bin_sources = \
+	src-reg/checkregularity.cc \
+	src/B_A.cc \
+	src/B_A_center.cc \
+	src/B_D.cc \
+	src/bench.cc \
+	src/chiro2allfinetriangs.cc \
+	src/chiro2alltriangs.cc \
+	src/chiro2circuits.cc \
+	src/chiro2cocircuits.cc \
+	src/chiro2dual.cc \
+	src/chiro2finetriang.cc \
+	src/chiro2finetriangs.cc \
+	src/chiro2mintriang.cc \
+	src/chiro2nallfinetriangs.cc \
+	src/chiro2nalltriangs.cc \
+	src/chiro2nfinetriangs.cc \
+	src/chiro2ntriangs.cc \
+	src/chiro2placingtriang.cc \
+	src/chiro2triangs.cc \
+	src/cocircuits2facets.cc \
+	src/cross.cc \
+	src/cube.cc \
+	src/cyclic.cc \
+	src/hypersimplex.cc \
+	src/lattice.cc \
+	src/points2allfinetriangs.cc \
+	src/points2alltriangs.cc \
+	src/points2chiro.cc \
+	src/points2facets.cc \
+	src/points2finetriang.cc \
+	src/points2finetriangs.cc \
+	src/points2flips.cc \
+	src/points2nallfinetriangs.cc \
+	src/points2nalltriangs.cc \
+	src/points2nfinetriangs.cc \
+	src/points2nflips.cc \
+	src/points2ntriangs.cc \
+	src/points2placingtriang.cc \
+	src/points2triangs.cc \
+	src/points2volume.cc \
+	src/santos_22_triang.cc \
+	src/santos_dim4_triang.cc \
+	src/santos_triang.cc
+bin_exes = $(bin_sources:%.cc=%)
+
+all: $(bin_exes)
+
+libTOPCOM.so.$(major).$(minor): $(library_objs)
+	$(CXX) $(CFLAGS) $(SHFLAGS) -o $@ $^ $(LIB_LDFLAGS)
+	ln -s libTOPCOM.so.$(major).$(minor) libTOPCOM.so.$(major)
+	ln -s libTOPCOM.so.$(major) libTOPCOM.so
+
+lib-src-reg/%.o: lib-src-reg/%.cc
+	$(CXX) $(CFLAGS) -fPIC -c -o $@ $^
+
+lib-src/%.o: lib-src/%.cc
+	$(CXX) $(CFLAGS) -fPIC -c -o $@ $^
+
+src-reg/%: src-reg/%.cc libTOPCOM.so.$(major).$(minor)
+	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+src/%: src/%.cc libTOPCOM.so.$(major).$(minor)
+	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+install: $(bin_exes)
+	install -d $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) $(DESTDIR)$(includedir)
+	install -p -m 0755 libTOPCOM.so.$(major).$(minor) $(DESTDIR)$(libdir)
+	ln -s libTOPCOM.so.$(major).$(minor) $(DESTDIR)$(libdir)/libTOPCOM.so.$(major)
+	ln -s libTOPCOM.so.$(major) $(DESTDIR)$(libdir)/libTOPCOM.so
+	install -p -m 0755 $(bin_exes) $(DESTDIR)$(bindir)
+	install -p -m 0644 wrap-gmp-gmpxx/*.h $(DESTDIR)$(includedir)
+	install -p -m 0644 lib-src-reg/*.hh $(DESTDIR)$(includedir)
+	install -p -m 0644 lib-src/*.hh $(DESTDIR)$(includedir)
+	install -d $(DESTDIR)$(mandir)/man1 $(DESTDIR)$(mandir)/man7
+	for f in man/*.1; do \
+	  sed "s/#version#/$(version)/" $$f > $(DESTDIR)$(mandir)/$${f/man/man1}; \
+	  touch -r $$f $(DESTDIR)$(mandir)/$${f/man/man1}; \
+	done
+	for f in man/*.7; do \
+	  sed "s/#version#/$(version)/" $$f > $(DESTDIR)$(mandir)/$${f/man/man7}; \
+	  touch -r $$f $(DESTDIR)$(mandir)/$${f/man/man7}; \
+	done

@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        Triangulations Of Point Configurations and Oriented Matroids
 
 License:        GPLv2+
-URL:            http://www.rambau.wm.uni-bayreuth.de/TOPCOM/
+URL:            https://www.rambau.wm.uni-bayreuth.de/TOPCOM/
 Source0:        http://www.rambau.wm.uni-bayreuth.de/Software/%{name}-%{version}.tar.gz
 # Man pages, written by Jerry James using text from the sources.  Therefore,
 # these man pages have the same copyright and license as the sources.

@@ -13,6 +13,7 @@ Source1:        %{name}-man.tar.xz
 Source2:        %{name}-Makefile
 Source3:	%{name}.rpmlintrc
 
+BuildRequires:	make
 BuildRequires:  cddlib-devel
 BuildRequires:  gmpxx-devel
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
